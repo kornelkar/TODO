@@ -1,0 +1,110 @@
+ <!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Add Product</title>
+</head>
+
+<body>
+    <header class="main-header">
+        <nav class="main-header__nav">
+           
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <form class="product-form" a method="POST">
+                <div class="form-control">
+                    <label for="title">tytuł</label>
+                    <input type="text" name="title" id="title">
+                </div>
+                <div class="form-control">
+                   <label for="text">opis</label>
+                   <input type="textarea" name="text" id="text">
+               </div>
+               <input type="submit" value="Dodaj" />
+            </form>
+        </section>
+        <section class="todos-list">
+            <h1>Lista</h1>
+            <ul></ul>
+        </section>              
+        </main>
+    </main>
+
+    <script>
+
+        const createTodoEl = (todo) => {
+            const todosList = document.querySelector(".todos-list");
+            const todoEl = document.createElement("div");
+            const titleEl = document.createElement("h3");
+            const infoEl1 = document.createElement("span");
+            const infoEl2 = document.createElement("span");
+
+            titleEl.textContent = todo.title;
+            infoEl1.textContent = todo.text;
+            infoEl2.textContent = todo.dateAdd;
+
+            todoEl.appendChild(titleEl);
+            todoEl.appendChild(infoEl1);
+            todoEl.appendChild(infoEl2);
+            todosList.appendChild(todoEl);
+        }
+
+        const getTodos = async () => {
+            fetch("http://localhost:5000/todos-list", {
+                    method: "POST",
+                    headers:{
+                        "Content-Type": "application/json",
+                        "Accept-Encoding": "gzip, deflate, br, compress"
+                    },
+                })
+                .then(res => res.json())
+                .then(res => res.todos.map(todo => createTodoEl(todo)))
+                .catch(err => console.log("error when getting todos: " + err))
+        };
+
+          const addTodo = async (todo) => {
+                fetch("http://localhost:5000/add-todo", {
+                    method: "POST",
+                    headers:{
+                        "Content-Type": "application/json",
+                        "Accept-Encoding": "gzip, deflate, br, compress"
+                    },
+                    body: JSON.stringify({
+                        todo
+                    })
+                })
+                .then(res => {
+                    if(res.ok){
+                        location.reload();
+                    }
+                })
+                .catch(err => console.log("error when posting todo: " + err))
+        };
+
+        const form = document.querySelector("form"); 
+        
+        form.addEventListener("submit", (e) => {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const formProps = Object.fromEntries(formData);
+            const newTodo = {
+                dateAdd: new Date().toISOString(),
+                title: formProps.title,
+                text: formProps.text,
+            };
+
+            addTodo(newTodo)
+        });
+
+        getTodos();
+
+    </script>
+</body>
+
+</html>

@@ -12,9 +12,11 @@ app.use((0, cors_1.default)());
 app.use(express_1.default.json({ limit: '50mb' }));
 app.use(express_1.default.json());
 app.use(express_1.default.urlencoded({ extended: false }));
+app.use(express_1.default.static('dist'));
 app.use((_, res, next) => {
     res.setHeader("Access-Control-Allow-Methods", "GET, PUT, POST, PATCH, DELETE");
     res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
+    res.sendFile(__dirname + '/index.html');
     next();
 });
 app.use(body_parser_1.default.urlencoded({ extended: false }));

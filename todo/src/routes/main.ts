@@ -15,54 +15,35 @@ router.post('/todos-list', (req: Request, res: Response, next: NextFunction) => 
 });
 
 
-router.post('/add-todo', (req: Request, res: Response, next: NextFunction) => {
+router.post('/add-todo', async (req: Request, res: Response, next: NextFunction) => {
   const todo = req.body.todo;
-  const newTodo: Todo = {
-    //id: v4(),
-    dateAdd: todo.dateAdd,
-    title: todo.title,
-    text: todo.text,
-  };
 
-  if(todo){
+  if (todo) {
     res.status(200).json({
       message: 'dodano zadanie',
-      todo: newTodo,
+      todo: todo,
     });
   }
 
 //  todos.push(newTodo);
-var response;
-var todo2;
+  var response;
   try {
-todo2 = prisma.todo.create({
-  //newTodo
-data: {
-id: v4(),
-title : 'title',
-text : 'text',
-dateAdd: 'dateAdd'
-},
-})
-res.status(StatusCodes.CREATED)
-} catch (err) {
-console.error(err)
-response = checkPrismaError(err, {
+    await prisma.todo.create({
+      data: {
+        id: v4(),
+        title: todo.title,
+        text: todo.text,
+        dateAdd: todo.dateAdd
+      },
+    })
+    res.status(StatusCodes.CREATED)
+  } catch (err) {
+    console.error(err)
+    response = checkPrismaError(err, {})
 
-})
-
-res.status(response.status)
+    res.status(response.status)
 //res.send(response.message)
-}
-console.log(todo2)
-
-console.log(response)
-
-
-
-
-
-
+  }
 });
 
 

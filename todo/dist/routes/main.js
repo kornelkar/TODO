@@ -1,4 +1,13 @@
 "use strict";
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
 const database_1 = require("../backend/database");
@@ -10,31 +19,23 @@ const todos = [];
 router.post('/todos-list', (req, res, next) => {
     res.status(200).json({ todos });
 });
-router.post('/add-todo', (req, res, next) => {
+router.post('/add-todo', (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const todo = req.body.todo;
-    const newTodo = {
-        //id: v4(),
-        dateAdd: todo.dateAdd,
-        title: todo.title,
-        text: todo.text,
-    };
     if (todo) {
         res.status(200).json({
             message: 'dodano zadanie',
-            todo: newTodo,
+            todo: todo,
         });
     }
     //  todos.push(newTodo);
     var response;
-    var todo2;
     try {
-        todo2 = database_1.prisma.todo.create({
-            //newTodo
+        yield database_1.prisma.todo.create({
             data: {
                 id: (0, uuid_1.v4)(),
-                title: 'title',
-                text: 'text',
-                dateAdd: 'dateAdd'
+                title: todo.title,
+                text: todo.text,
+                dateAdd: todo.dateAdd
             },
         });
         res.status(http_status_codes_1.StatusCodes.CREATED);
@@ -45,9 +46,8 @@ router.post('/add-todo', (req, res, next) => {
         res.status(response.status);
         //res.send(response.message)
     }
-    console.log(todo2);
     console.log(response);
-});
+}));
 router.put('/todo/:todoId', (req, res, next) => {
     const todos = res.locals.todos;
     const params = req.params;
